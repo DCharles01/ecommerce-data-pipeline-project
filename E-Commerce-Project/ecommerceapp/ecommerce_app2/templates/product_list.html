@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product List</title>
+</head>
+<body>
+    <h1>Product List</h1>
+    
+    <form method="GET" action="">
+        <label for="limit">Products Per Page:</label>
+        <select name="limit" id="limit">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+        </select>
+        <input type="submit" value="Apply">
+    </form>
+    
+    <table>
+        <thead>
+            <tr>
+                <!-- <th>Product ID</th> -->
+                <th>Product Name</th>
+                <!-- <th>Aisle</th>
+                <th>Department</th> -->
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <!-- <td>{{ product.product_id }}</td> -->
+                <td>{{ product.product_name }}</td>
+                <!-- <td>{{ product.aisle }}</td> -->
+                <!-- <td>{{ product.department }}</td> -->
+                <td>{{ product.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
