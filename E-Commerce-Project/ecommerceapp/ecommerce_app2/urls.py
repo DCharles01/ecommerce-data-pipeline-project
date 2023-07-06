@@ -19,12 +19,21 @@ from django.urls import path
 # from django.conf.urls import url
 # import sys
 # sys.path.append('..')
+from .views import product_api
 from .views import product_list
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     # add product list html
-    path(r'products/', product_list, name='product_list')
+    # path(r'products/', product_list, name='product_list'),
+    path('api/products/', product_api, name='product_api'),
+    path('home/', product_list, name='product_list')
     #url(r'^/products/', product_list)
 
 ]
+
+# from .views import get_products
+
+# urlpatterns = [
+#     path('api/products/', get_products, name='get_products'),
+# ]

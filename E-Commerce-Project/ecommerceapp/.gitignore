@@ -1,3 +1,6 @@
 *pycache*
 .DS_Store
 .csv
+order_products__prior.parquet
+product_list_old.html
+product_list_old2.html

@@ -1,44 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Product List</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food 2 You</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+
+    /* Custom CSS styles */
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+    .product-card img {
+        width: 100%;
+        height: auto;
+    }
+    .product-card h5 {
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    .product-card p {
+        margin-top: 5px;
+    }
+    .add-to-cart-btn {
+        margin-top: 10px;
+    }
+    
+  </style>
 </head>
 <body>
-    <h1>Product List</h1>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Food 2 You</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Cart</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Login</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Food 2 You</h1>
+    <div id="products-container" class="row"></div>
+</div>
+
+<script>
+    // Fetch products from backend and display them on the frontend
+    fetch('/api/products')
+        .then(response => response.json())
+        .then(products => {
+            const productsContainer = document.getElementById('products-container');
+            products.products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('col-md-4', 'product-card');
+
+                // const productImage = document.createElement('img');
+                // productImage.src = product.image;
+                // productCard.appendChild(productImage);
+
+                const productName = document.createElement('h5');
+                productName.innerText = product.product_name;
+                productCard.appendChild(productName);
     
-    <form method="GET" action="">
-        <label for="limit">Products Per Page:</label>
-        <select name="limit" id="limit">
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
-        </select>
-        <input type="submit" value="Apply">
-    </form>
+
+                const productPrice = document.createElement('p');
+                productPrice.innerText = `Price: $${product.price}`;
+                productCard.appendChild(productPrice);
+
+                
+                // const productInventory = document.createElement('p');
+                // productInventory.innerText = `Quantity: $${product.quantity}`;
+                // productCard.appendChild(productInventory);
+
+
+                const addToCartBtn = document.createElement('button');
+                addToCartBtn.classList.add('btn', 'btn-primary', 'add-to-cart-btn');
+                addToCartBtn.innerText = 'Add to Cart';
+                productCard.appendChild(addToCartBtn);
+
+                productsContainer.appendChild(productCard);
+
+            
+            });
+        });
+
+    // Function to update the cart total
+    function updateCartTotal() {
+    // Get all the cart items
+    var cartItems = document.getElementsByClassName('cart-item');
+    var total = 0;
     
-    <table>
-        <thead>
-            <tr>
-                <!-- <th>Product ID</th> -->
-                <th>Product Name</th>
-                <!-- <th>Aisle</th>
-                <th>Department</th> -->
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <!-- <td>{{ product.product_id }}</td> -->
-                <td>{{ product.product_name }}</td>
-                <!-- <td>{{ product.aisle }}</td> -->
-                <!-- <td>{{ product.department }}</td> -->
-                <td>{{ product.price }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    // Calculate the total price
+    for (var i = 0; i < cartItems.length; i++) {
+        var cartItem = cartItems[i];
+        var priceElement = cartItem.getElementsByClassName('cart-item-price')[0];
+        var quantityElement = cartItem.getElementsByClassName('cart-item-quantity')[0];
+        var price = parseFloat(priceElement.innerText.replace('$', ''));
+        var quantity = quantityElement.value;
+        total += price * quantity;
+    }
+    
+    // Update the cart total
+    document.getElementById('cart-total').innerText = 'Total: $' + total.toFixed(2);
+    }
+
+    // Function to handle adding a product to the cart
+    function addToCart(productId, productName, productPrice) {
+    // Check if the product is already in the cart
+    var cartItems = document.getElementsByClassName('cart-item');
+    for (var i = 0; i < cartItems.length; i++) {
+        var cartItem = cartItems[i];
+        var cartItemId = cartItem.dataset.productId;
+        if (cartItemId === productId) {
+        var quantityElement = cartItem.getElementsByClassName('cart-item-quantity')[0];
+        var quantity = parseInt(quantityElement.value);
+        quantityElement.value = quantity + 1;
+        updateCartTotal();
+        return;
+        }
+    }
+    
+    // Create a new cart item
+    var cartItem = document.createElement('li');
+    cartItem.classList.add('cart-item');
+    cartItem.dataset.productId = productId;
+    
+    var nameElement = document.createElement('span');
+    nameElement.innerText = productName;
+    
+    var priceElement = document.createElement('span');
+    priceElement.classList.add('cart-item-price');
+    priceElement.innerText = '$' + productPrice.toFixed(2);
+    
+    var quantityElement = document.createElement('input');
+    quantityElement.classList.add('cart-item-quantity');
+    quantityElement.type = 'number';
+    quantityElement.value = 1;
+    quantityElement.addEventListener('change', updateCartTotal);
+    
+    var removeButton = document.createElement('button');
+    removeButton.innerText = 'Remove';
+    removeButton.addEventListener('click', function() {
+        cartItem.remove();
+        updateCartTotal();
+    });
+    
+    cartItem.appendChild(nameElement);
+    cartItem.appendChild(priceElement);
+    cartItem.appendChild(quantityElement);
+    cartItem.appendChild(removeButton);
+    
+    document.getElementById('cart-items').appendChild(cartItem);
+    
+    updateCartTotal();
+    }
+
+    // Event listener for adding a product to the cart
+    document.addEventListener('DOMContentLoaded', function() {
+    var addToCartButtons = document.getElementsByClassName('add-to-cart-btn');
+    for (var i = 0; i < addToCartButtons.length; i++) {
+        var addToCartButton = addToCartButtons[i];
+        addToCartButton.addEventListener('click', function() {
+        var productId = this.dataset.productId;
+        var productName = this.dataset.productName;
+        var productPrice = parseFloat(this.dataset.productPrice);
+        addToCart(productId, productName, productPrice);
+        });
+    }
+    });
+</script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
